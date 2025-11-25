@@ -10,21 +10,18 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-{
-    Schema::create('admins', function (Blueprint $table) {
-        $table->id(); // primary key
-        $table->string('username')->unique(); // username admin
-        $table->string('password'); // password admin
-        $table->timestamps(); // created_at & updated_at
-    });
-}
-
+    {
+        Schema::create('kategori', function (Blueprint $table) {
+            $table->id();
+            $table->string('nama_kategori', 100);
+        });
+    }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('admins');
+        Schema::dropIfExists('kategori');
     }
 };
