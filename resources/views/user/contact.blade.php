@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
+
+    <main class="bg-black min-h-screen flex flex-col">
 <section class="bg-white text-black py-16 overflow-hidden">
     <div class="container mx-auto px-6 text-center animate-fadeIn">
         <!-- Judul -->
@@ -54,6 +56,7 @@
         </div>
     </div>
 </section>
+</main>
 @include('components.footer')
 {{-- Animasi custom --}}
 <style>
@@ -75,6 +78,7 @@
 .delay-300 { animation-delay: 0.3s; }
 .delay-400 { animation-delay: 0.4s; }
 </style>
+
 @endsection
 
 

@@ -40,23 +40,38 @@
         <a href="/about" class="hover:text-gray-300">Tentang Kami</a>
       </nav>
 
-      <!-- Hamburger Button (Mobile) -->
-      <button @click="open = !open" class="md:hidden focus:outline-none">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-             viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-             class="w-7 h-7">
-          <path stroke-linecap="round" stroke-linejoin="round"
-                d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      </button>
-    </div>
+<!-- Hamburger Button (Mobile) -->
+<button @click="open = !open" class="md:hidden focus:outline-none">
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+       viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+       class="w-7 h-7">
+    <path stroke-linecap="round" stroke-linejoin="round"
+          d="M4 6h16M4 12h16M4 18h16" />
+  </svg>
+</button>
 
-    <!-- Dropdown Menu (Mobile) -->
-    <div x-show="open" class="md:hidden bg-neutral-800 px-6 py-4 space-y-2">
-      <a href="/" class="block hover:text-gray-300">Beranda</a>
-      <a href="/produk" class="block hover:text-gray-300">Produk</a>
-      <a href="/contact" class="block hover:text-gray-300">Kontak</a>
-      <a href="/about" class="block hover:text-gray-300">Tentang Kami</a>
+  </div>
+
+  <!-- Dropdown Menu (Mobile) -->
+
+  <div x-show="open" x-transition class="md:hidden bg-neutral-800 px-6 py-4 space-y-2">
+    <button @click="$el.classList.add('animate-pop'); $el.classList.add('font-bold'); setTimeout(() => { $el.classList.remove('animate-pop'); $el.classList.remove('font-bold') }, 300)"
+            class="block w-full text-left hover:text-gray-300">Beranda</button>
+    <button @click="$el.classList.add('animate-pop'); $el.classList.add('font-bold'); setTimeout(() => { $el.classList.remove('animate-pop'); $el.classList.remove('font-bold') }, 300)"
+            class="block w-full text-left hover:text-gray-300">Tentang Kami</button>
+    <button @click="$el.classList.add('animate-pop'); $el.classList.add('font-bold'); setTimeout(() => { $el.classList.remove('animate-pop'); $el.classList.remove('font-bold') }, 300)"
+            class="block w-full text-left hover:text-gray-300">Kontak</button>
+
+
+<!-- Mobile Search (hanya input) -->
+<div class="mt-2">
+  <form action="/produk" method="GET">
+    <input type="text" name="q" placeholder="Masukkan nama parfum..."
+           class="w-full px-3 py-2 rounded-lg bg-neutral-900 text-white focus:ring-2 focus:ring-gray-500 outline-none transition-all">
+    <div class="flex justify-end mt-2">
+      <button type="submit" class="bg-neutral-700 hover:bg-neutral-600 px-4 py-2 rounded-lg font-medium transition-all">
+        Cari
+      </button>
     </div>
   </header>
 

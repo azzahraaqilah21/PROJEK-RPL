@@ -2,7 +2,7 @@
 </head>
 <body class="bg-white text-black min-h-screen flex flex-col">
     @include('components.navbar')
-
+   
     {{-- Bagian produk --}}
     <section class="bg-gray-50 text-black py-16 flex-grow">
         <div class="container mx-auto px-6">
