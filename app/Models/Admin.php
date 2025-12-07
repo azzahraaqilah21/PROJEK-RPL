@@ -9,6 +9,7 @@ class Admin extends Authenticatable
 {
     use Notifiable;
 
+    protected $table = 'admin';
     protected $fillable = [
         'username',
         'password',
@@ -18,8 +19,13 @@ class Admin extends Authenticatable
         'password',
         'remember_token',
     ];
-    
-     protected $casts = [
-        'password' => 'hashed',
-    ];
+
+
+
+public function getAuthIdentifierName()
+{
+    return 'username';
 }
+}
+
+

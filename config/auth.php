@@ -7,17 +7,17 @@ return [
     ],
 
     'guards' => [
-        'web' => [
-            'driver' => 'session',
-            'provider' => 'users',
-        ],
-
-        // Add Admin Guard
-        'admin' => [
-            'driver' => 'session',
-            'provider' => 'admins',
-        ],
+    'web' => [
+        'driver' => 'session',
+        'provider' => 'users',
     ],
+
+    'admin' => [
+        'driver' => 'session',
+        'provider' => 'admins',
+    ],
+],
+
 
     'providers' => [
         'users' => [
@@ -25,12 +25,12 @@ return [
             'model' => App\Models\User::class,
         ],
 
-        // Add Admin Provider
-        'admins' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\Admin::class,
-        ],
+    'admins' => [
+        'driver' => 'eloquent',
+        'model' => App\Models\Admin::class,
     ],
+],
+
 
     'passwords' => [
         'users' => [

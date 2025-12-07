@@ -23,10 +23,10 @@ class DetailTransaksi extends Model
         'harga_satuan' => 'integer',
     ];
 
-    public function parfum(): BelongsTo
-    {
-        return $this->belongsTo(Parfum::class, 'parfum_id', 'nama');
-    }
+   public function parfum(): BelongsTo
+{
+    return $this->belongsTo(Parfum::class, 'parfum_id', 'id');
+}
 
     public function getTotalHargaAttribute(): int
     {

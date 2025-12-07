@@ -18,7 +18,7 @@ class AdminController extends Controller
         if (Auth::guard('admin')->check()) {
             return redirect()->route('admin.dashboard');
         }
-        return view('admin.login');
+        return view('admin.dashboard.index');
     }
 
     // Proses login
@@ -60,7 +60,7 @@ class AdminController extends Controller
         // Penjualan per Kategori
         $penjualanPerKategori = Kategori::select('kategori.nama_kategori', DB::raw('COUNT(detail_transaksi.id) as total'))
             ->leftJoin('parfum', 'kategori.id', '=', 'parfum.kategori_id')
-            ->leftJoin('detail_transaksi', 'parfum.nama', '=', 'detail_transaksi.parfum_id')
+            ->leftJoin('detail_transaksi', 'parfum.id', '=', 'detail_transaksi.parfum_id')
             ->groupBy('kategori.id', 'kategori.nama_kategori')
             ->get();
 
@@ -70,15 +70,32 @@ class AdminController extends Controller
             ->limit(10)
             ->get();
 
-        return view('admin.dashboard', compact(
-            'totalParfum',
-            'totalKategori',
-            'totalTransaksi',
-            'totalPendapatan',
-            'bestSellers',
-            'penjualanPerKategori',
-            'transaksiTerbaru'
-        ));
+    // ============================
+    // CHART.JS – PREPARE DATA
+    // ============================
+
+    // Chart: Top 5 Terlaris
+    $chartBestSellerLabels = $bestSellers->pluck('parfum.nama');
+    $chartBestSellerData = $bestSellers->pluck('total_terjual');
+
+    // Chart: Penjualan per Kategori
+    $chartKategoriLabels = $penjualanPerKategori->pluck('nama_kategori');
+    $chartKategoriData = $penjualanPerKategori->pluck('total');
+
+        return view('admin.dashboard.index', compact(
+    'totalParfum',
+    'totalKategori',
+    'totalTransaksi',
+    'totalPendapatan',
+    'bestSellers',
+    'penjualanPerKategori',
+    'transaksiTerbaru',
+    'chartBestSellerLabels',
+    'chartBestSellerData',
+    'chartKategoriLabels',
+    'chartKategoriData'
+     ));
+
     }
 
     // Logout
