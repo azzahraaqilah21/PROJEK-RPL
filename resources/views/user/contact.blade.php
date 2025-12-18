@@ -2,8 +2,8 @@
 
 @section('content')
 
-    <main class="bg-black min-h-screen flex flex-col">
-<section class="bg-white text-black py-16 overflow-hidden">
+    <main class="bg-black min-h-fit flex flex-col">
+<section class="bg-white text-black py-8 overflow-hidden">
     <div class="container mx-auto px-6 text-center animate-fadeIn">
         <!-- Judul -->
         <h1 class="text-4xl font-bold mb-4 animate-slideDown">Kontak</h1>
@@ -57,7 +57,7 @@
     </div>
 </section>
 </main>
-@include('components.footer')
+
 {{-- Animasi custom --}}
 <style>
 @keyframes fadeIn {

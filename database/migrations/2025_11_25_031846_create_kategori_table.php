@@ -11,10 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('kategori', function (Blueprint $table) {
-            $table->id();
-            $table->string('nama_kategori', 100);
-        });
+       Schema::create('parfum', function (Blueprint $table) {
+    $table->id();
+    $table->string('nama', 100);
+    $table->string('varian_aroma', 100)->nullable();
+    $table->string('tipe_parfum', 50); // field baru
+    $table->integer('harga');
+    $table->integer('stok')->default(0);
+    $table->text('deskripsi')->nullable();
+    $table->timestamps();
+    });
+    Schema::table('kategori', function (Blueprint $table) {
+    $table->enum('tipe_parfum', ['Pria', 'Wanita', 'Unisex'])->after('nama_kategori')->default('Unisex');
+    });
     }
 
     /**

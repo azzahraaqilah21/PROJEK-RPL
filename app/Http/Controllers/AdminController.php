@@ -18,7 +18,7 @@ class AdminController extends Controller
         if (Auth::guard('admin')->check()) {
             return redirect()->route('admin.dashboard');
         }
-        return view('admin.dashboard.index');
+        return view('admin.login'); // Ganti ke view login
     }
 
     // Proses login
@@ -39,15 +39,14 @@ class AdminController extends Controller
         ])->onlyInput('username');
     }
 
+
     // Dashboard Admin
     public function dashboard()
     {
         $totalParfum = Parfum::count();
         $totalKategori = Kategori::count();
-        $totalTransaksi = DetailTransaksi::distinct('tranksasi_id')->count('tranksasi_id');
-
-        // Total Pendapatan
-        $totalPendapatan = DetailTransaksi::sum(DB::raw('jumlah * harga_satuan'));
+        $totalTransaksi = Transaksi::count();
+        $totalPendapatan = Transaksi::sum('total_harga');
 
         // Best Seller Parfum
         $bestSellers = DetailTransaksi::select('parfum_id', DB::raw('SUM(jumlah) as total_terjual'))
@@ -95,15 +94,16 @@ class AdminController extends Controller
     'chartKategoriLabels',
     'chartKategoriData'
      ));
-
     }
-
     // Logout
     public function logout(Request $request)
     {
-        Auth::guard('admin')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect()->route('admin.login');
+    Auth::guard('admin')->logout();
+
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect('/'); // mengarah ke welcome.blade.php
     }
+
 }

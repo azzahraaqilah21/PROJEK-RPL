@@ -5,138 +5,107 @@ namespace App\Http\Controllers;
 use App\Models\Parfum;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class ParfumController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        $query = Parfum::with('kategori');
-
-        // Search berdasarkan nama atau deskripsi
-        if ($request->has('search') && $request->search != '') {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('nama', 'like', '%' . $search . '%')
-                  ->orWhere('deskripsi', 'like', '%' . $search . '%');
-            });
-        }
-
-        // Filter by Gender
-        if ($request->has('gender') && $request->gender != '') {
-            $query->where('gender', $request->gender);
-        }
-
-        // Filter by Aroma (varian_aroma)
-        if ($request->has('aroma') && $request->aroma != '') {
-            $query->where('varian_aroma', 'like', '%' . $request->aroma . '%');
-        }
-
-        // Filter by Kategori
-        if ($request->has('kategori') && $request->kategori != '') {
-            $query->where('kategori_id', $request->kategori);
-        }
-
-        // Filter by Harga
-        if ($request->has('harga_min') && $request->harga_min != '') {
-            $query->where('harga', '>=', $request->harga_min);
-        }
-        if ($request->has('harga_max') && $request->harga_max != '') {
-            $query->where('harga', '<=', $request->harga_max);
-        }
-
-        // Sort
-        $sortBy = $request->get('sort', 'nama');
-        $sortOrder = $request->get('order', 'asc');
-        $query->orderBy($sortBy, $sortOrder);
-
-        $parfums = $query->get();
-        $kategoris = Kategori::all();
-
-        return view('parfum.index', compact('parfums', 'kategoris'));
+        $parfums = Parfum::with('kategori')->latest()->get();
+        return view('admin.parfum.index', compact('parfums'));
     }
 
     public function create()
     {
-        $kategoris = Kategori::all();
-        return view('parfum.create', compact('kategoris'));
+        $kategoris = Kategori::whereIn('nama_kategori', [
+            'Pria',
+            'Wanita',
+            'Unisex'
+        ])->get();
+
+        return view('admin.parfum.create', compact('kategoris'));
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'nama' => 'required|string|max:100|unique:parfum,nama',
+        $data = $request->validate([
+            'nama' => 'required|string|unique:parfum,nama',
             'varian_aroma' => 'nullable|string|max:100',
-            'gender' => 'required|in:Pria,Wanita,Unisex',
+
+            // 🔥 GENDER → KATEGORI
+            'kategori_id' => [
+                'required',
+                Rule::exists('kategori', 'id')
+                    ->whereIn('nama_kategori', ['Pria', 'Wanita', 'Unisex'])
+            ],
+
             'harga' => 'required|integer|min:0',
-            'stok' => 'nullable|string|max:50',
-            'deskripsi' => 'nullable|string',
-            'kategori_id' => 'nullable|exists:kategori,id',
+            'stok' => 'required|integer|min:0',
+            'link' => 'nullable|url',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        Parfum::create($validated);
-
-        return redirect()->route('parfum.index')->with('success', 'Parfum berhasil ditambahkan!');
-    }
-
-    public function edit($nama)
-    {
-        $parfum = Parfum::findOrFail($nama);
-        $kategoris = Kategori::all();
-        return view('parfum.edit', compact('parfum', 'kategoris'));
-    }
-
-    public function update(Request $request, $nama)
-    {
-        $parfum = Parfum::findOrFail($nama);
-
-        $validated = $request->validate([
-            'varian_aroma' => 'nullable|string|max:100',
-            'gender' => 'required|in:Pria,Wanita,Unisex',
-            'harga' => 'required|integer|min:0',
-            'stok' => 'nullable|string|max:50',
-            'deskripsi' => 'nullable|string',
-            'kategori_id' => 'nullable|exists:kategori,id',
-        ]);
-
-        $parfum->update($validated);
-
-        return redirect()->route('parfum.index')->with('success', 'Parfum berhasil diupdate!');
-    }
-
-    public function destroy($nama)
-    {
-        $parfum = Parfum::findOrFail($nama);
-        $parfum->delete();
-
-        return redirect()->route('parfum.index')->with('success', 'Parfum berhasil dihapus!');
-    }
-
-    public function export()
-    {
-        $parfums = Parfum::with('kategori')->get();
-
-        $filename = 'parfum_' . date('Y-m-d_His') . '.csv';
-
-        header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename="' . $filename . '"');
-
-        $output = fopen('php://output', 'w');
-
-        fputcsv($output, ['Nama', 'Kategori', 'Varian Aroma', 'Gender', 'Harga', 'Stok', 'Deskripsi']);
-
-        foreach ($parfums as $parfum) {
-            fputcsv($output, [
-                $parfum->nama,
-                $parfum->kategori ? $parfum->kategori->nama_kategori : '-',
-                $parfum->varian_aroma,
-                $parfum->gender,
-                $parfum->harga,
-                $parfum->stok,
-                $parfum->deskripsi,
-            ]);
+        if ($request->hasFile('foto')) {
+            $data['foto'] = $request->file('foto')->store('parfum', 'public');
         }
 
-        fclose($output);
-        exit();
+        Parfum::create($data);
+
+        return redirect()->route('admin.parfum.index')
+            ->with('success', 'Parfum berhasil ditambahkan');
+    }
+
+    public function edit(Parfum $parfum)
+    {
+        $kategoris = Kategori::whereIn('nama_kategori', [
+            'Pria',
+            'Wanita',
+            'Unisex'
+        ])->get();
+
+        return view('admin.parfum.edit', compact('parfum', 'kategoris'));
+    }
+
+    public function update(Request $request, Parfum $parfum)
+    {
+        $data = $request->validate([
+            'varian_aroma' => 'nullable|string|max:100',
+
+            'kategori_id' => [
+                'required',
+                Rule::exists('kategori', 'id')
+                    ->whereIn('nama_kategori', ['Pria', 'Wanita', 'Unisex'])
+            ],
+
+            'harga' => 'required|integer|min:0',
+            'stok' => 'required|integer|min:0',
+            'link' => 'nullable|url',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        if ($request->hasFile('foto')) {
+            if ($parfum->foto) {
+                Storage::disk('public')->delete($parfum->foto);
+            }
+            $data['foto'] = $request->file('foto')->store('parfum', 'public');
+        }
+
+        $parfum->update($data);
+
+        return redirect()->route('admin.parfum.index')
+            ->with('success', 'Parfum berhasil diperbarui');
+    }
+
+    public function destroy(Parfum $parfum)
+    {
+        if ($parfum->foto) {
+            Storage::disk('public')->delete($parfum->foto);
+        }
+
+        $parfum->delete();
+
+        return back()->with('success', 'Parfum berhasil dihapus');
     }
 }
+

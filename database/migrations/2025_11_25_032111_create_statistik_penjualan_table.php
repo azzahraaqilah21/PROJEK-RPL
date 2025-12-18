@@ -12,12 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('statistik_penjualan', function (Blueprint $table) {
-            $table->string('nama_parfum', 100)->primary();
-            $table->string('penjualan_per_day', 50)->nullable();
-            $table->string('best_seller', 50)->nullable();
+    $table->id();
+    $table->unsignedBigInteger('parfum_id')->unique(); // unik karena satu parfum satu statistik
+    $table->integer('penjualan_per_day')->default(0);
+    $table->boolean('best_seller')->default(false);
+    $table->timestamps();
 
-            $table->foreign('nama_parfum')->references('nama')->on('parfum');
-        });
+    $table->foreign('parfum_id')->references('id')->on('parfum')->onDelete('cascade');
+});
+
     }
 
     /**

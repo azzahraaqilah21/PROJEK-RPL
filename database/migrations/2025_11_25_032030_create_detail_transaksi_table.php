@@ -12,15 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('detail_transaksi', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('transaksi_id');
-            $table->string('parfum_id', 100)->nullable();
-            $table->integer('jumlah');
-            $table->integer('harga_satuan');
+    $table->id();
+    $table->unsignedBigInteger('transaksi_id');
+    $table->unsignedBigInteger('parfum_id'); // mengacu ke parfum.id
+    $table->integer('jumlah');
+    $table->integer('harga_satuan');
+    $table->timestamps();
 
-            $table->foreign('transaksi_id')->references('id')->on('transaksi')->onDelete('cascade');
-            $table->foreign('parfum_id')->references('nama')->on('parfum')->onDelete('cascade');
-        });
+    $table->foreign('transaksi_id')->references('id')->on('transaksi')->onDelete('cascade');
+    $table->foreign('parfum_id')->references('id')->on('parfum')->onDelete('cascade');
+});
+
 
     }
 

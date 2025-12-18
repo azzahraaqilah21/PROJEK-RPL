@@ -1,125 +1,80 @@
-@extends('layouts.app')
-
-@section('title', 'Edit Parfum')
+@extends('admin.layouts.app')
 
 @section('content')
-<div class="max-w-3xl mx-auto">
-    <div class="mb-6">
-        <a href="{{ route('parfum.index') }}" class="text-black hover:text-gray-700 transition">
-            <i class="fas fa-arrow-left mr-2"></i>Kembali ke Daftar Parfum
-        </a>
-    </div>
+<div class="container mx-auto py-8">
 
-    <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">
-            <i class="fas fa-edit text-black mr-2"></i>
-            Edit Parfum: {{ $parfum->nama }}
-        </h2>
+    <h1 class="text-2xl font-bold mb-6">Edit Parfum</h1>
 
-        <form action="{{ route('parfum.update', $parfum->nama) }}" method="POST">
-            @csrf
-            @method('PUT')
+    {{-- Validasi error --}}
+    @if ($errors->any())
+        <div class="bg-red-200 text-red-800 p-4 rounded mb-4">
+            <ul class="list-disc list-inside">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-            <div class="mb-6">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">
-                    Nama Parfum
-                </label>
-                <input type="text" value="{{ $parfum->nama }}" disabled
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed">
-                <p class="text-xs text-gray-500 mt-1">Nama parfum tidak dapat diubah</p>
-            </div>
+    <form action="{{ route('admin.parfum.update', $parfum->id) }}" method="POST" enctype="multipart/form-data" class="space-y-4 bg-white p-6 rounded shadow">
+        @csrf
+        @method('PUT')
 
-            <div class="mb-6">
-                <label for="kategori_id" class="block text-sm font-semibold text-gray-700 mb-2">
-                    Kategori
-                </label>
-                <select name="kategori_id" id="kategori_id"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent @error('kategori_id') border-red-500 @enderror">
-                    <option value="">-- Pilih Kategori --</option>
-                    @foreach($kategoris as $kategori)
-                        <option value="{{ $kategori->id }}"
-                            {{ (old('kategori_id', $parfum->kategori_id) == $kategori->id) ? 'selected' : '' }}>
-                            {{ $kategori->nama_kategori }}
-                        </option>
-                    @endforeach
-                </select>
-                @error('kategori_id')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
-            </div>
+        <div>
+            <label class="block font-semibold mb-1">Nama Parfum</label>
+            <input type="text" name="nama" value="{{ old('nama', $parfum->nama) }}" class="w-full border px-3 py-2 rounded" required>
+        </div>
 
-            <div class="mb-6">
-                <label for="gender" class="block text-sm font-semibold text-gray-700 mb-2">
-                    Gender <span class="text-red-500">*</span>
-                </label>
-                <select name="gender" id="gender" required
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent @error('gender') border-red-500 @enderror">
-                    <option value="">-- Pilih Gender --</option>
-                    <option value="Pria" {{ old('gender', $parfum->gender) == 'Pria' ? 'selected' : '' }}>Pria</option>
-                    <option value="Wanita" {{ old('gender', $parfum->gender) == 'Wanita' ? 'selected' : '' }}>Wanita</option>
-                    <option value="Unisex" {{ old('gender', $parfum->gender) == 'Unisex' ? 'selected' : '' }}>Unisex</option>
-                </select>
-                @error('gender')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
-            </div>
+        <div>
+            <label class="block font-semibold mb-1">Varian Aroma</label>
+            <input type="text" name="varian_aroma" value="{{ old('varian_aroma', $parfum->varian_aroma) }}" class="w-full border px-3 py-2 rounded">
+        </div>
 
-            <div class="mb-6">
-                <label for="varian_aroma" class="block text-sm font-semibold text-gray-700 mb-2">
-                    Varian Aroma
-                </label>
-                <input type="text" name="varian_aroma" id="varian_aroma" value="{{ old('varian_aroma', $parfum->varian_aroma) }}"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent @error('varian_aroma') border-red-500 @enderror"
-                    placeholder="Contoh: Floral, Woody, Citrus">
-                @error('varian_aroma')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
-            </div>
+        <div>
+            <label class="block font-semibold mb-1">Gender</label>
+            <select name="gender" class="w-full border px-3 py-2 rounded" required>
+                <option value="Pria" {{ (old('gender', $parfum->gender) == 'Pria') ? 'selected' : '' }}>Pria</option>
+                <option value="Wanita" {{ (old('gender', $parfum->gender) == 'Wanita') ? 'selected' : '' }}>Wanita</option>
+                <option value="Unisex" {{ (old('gender', $parfum->gender) == 'Unisex') ? 'selected' : '' }}>Unisex</option>
+            </select>
+        </div>
 
-            <div class="mb-6">
-                <label for="harga" class="block text-sm font-semibold text-gray-700 mb-2">
-                    Harga (Rp) <span class="text-red-500">*</span>
-                </label>
-                <input type="number" name="harga" id="harga" value="{{ old('harga', $parfum->harga) }}" required min="0"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent @error('harga') border-red-500 @enderror">
-                @error('harga')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
-            </div>
+        <div>
+            <label class="block font-semibold mb-1">Harga (Rp)</label>
+            <input type="number" name="harga" value="{{ old('harga', $parfum->harga) }}" class="w-full border px-3 py-2 rounded" required>
+        </div>
 
-            <div class="mb-6">
-                <label for="stok" class="block text-sm font-semibold text-gray-700 mb-2">
-                    Stok
-                </label>
-                <input type="text" name="stok" id="stok" value="{{ old('stok', $parfum->stok) }}"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent @error('stok') border-red-500 @enderror"
-                    placeholder="Contoh: 50 pcs">
-                @error('stok')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
-            </div>
+        <div>
+    <label class="block font-semibold mb-1">Tipe Parfum</label>
+    <select name="tipe_parfum" class="w-full border px-3 py-2 rounded" required>
+        <option value="">-- Pilih Tipe --</option>
+        <option value="Eau de Parfum (EDP)" {{ old('tipe_parfum') == 'Eau de Parfum (EDP)' ? 'selected' : '' }}>Eau de Parfum (EDP)</option>
+        <option value="Eau de Toilette (EDT)" {{ old('tipe_parfum') == 'Eau de Toilette (EDT)' ? 'selected' : '' }}>Eau de Toilette (EDT)</option>
+        <option value="Body Mist / Spray" {{ old('tipe_parfum') == 'Body Mist / Spray' ? 'selected' : '' }}>Body Mist / Spray</option>
+    </select>
+</div>
 
-            <div class="mb-6">
-                <label for="deskripsi" class="block text-sm font-semibold text-gray-700 mb-2">
-                    Deskripsi
-                </label>
-                <textarea name="deskripsi" id="deskripsi" rows="4"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent @error('deskripsi') border-red-500 @enderror"
-                    placeholder="Deskripsikan parfum ini...">{{ old('deskripsi', $parfum->deskripsi) }}</textarea>
-                @error('deskripsi')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
-            </div>
+        <div>
+            <label class="block font-semibold mb-1">Link</label>
+            <input type="url" name="link" value="{{ old('link', $parfum->link) }}" class="w-full border px-3 py-2 rounded">
+        </div>
 
-            <div class="flex space-x-4">
-                <button type="submit" class="flex-1 bg-black hover:bg-gray-800 text-white px-6 py-3 rounded-lg font-semibold transition active:scale-95 active:ring-2 active:ring-black active:ring-opacity-50">
-                    <i class="fas fa-save mr-2"></i>Update Parfum
-                </button>
-                <a href="{{ route('parfum.index') }}" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-3 rounded-lg font-semibold text-center transition active:scale-95">
-                    <i class="fas fa-times mr-2"></i>Batal
-                </a>
-            </div>
-        </form>
-    </div>
+        <div>
+            <label class="block font-semibold mb-1">Foto Parfum</label>
+            @if($parfum->foto)
+                <div class="mb-2">
+                    <img src="{{ asset('storage/' . $parfum->foto) }}" class="w-24 h-24 object-cover rounded" alt="{{ $parfum->nama }}">
+                </div>
+            @endif
+            <input type="file" name="foto" class="w-full border px-3 py-2 rounded">
+            <small class="text-gray-500">Kosongkan jika tidak ingin mengganti foto.</small>
+        </div>
+
+        <div class="flex space-x-2">
+            <button type="submit" class="bg-black text-white px-6 py-2 rounded hover:bg-gray-800 transition">Update</button>
+            <a href="{{ route('admin.parfum.index') }}" class="bg-gray-300 text-gray-800 px-6 py-2 rounded hover:bg-gray-400">Kembali</a>
+        </div>
+    </form>
+
 </div>
 @endsection

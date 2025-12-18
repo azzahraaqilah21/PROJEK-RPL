@@ -1,22 +1,20 @@
-@extends('layouts.app')
-
-@section('title', 'Daftar Parfum')
-
+@extends('layouts.admin')
 @section('content')
-<div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-    <h1 class="text-3xl font-bold text-gray-900">
-        <i class="fas fa-spray-can text-black mr-2"></i>
-        Daftar Parfum
-    </h1>
-    <div class="flex gap-2">
-        <a href="{{ route('parfum.export') }}" class="bg-gray-700 hover:bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg transition active:scale-95 active:ring-2 active:ring-black active:ring-opacity-50">
-            <i class="fas fa-file-excel mr-2"></i>Export CSV
-        </a>
-        <a href="{{ route('parfum.create') }}" class="bg-black hover:bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg transition active:scale-95 active:ring-2 active:ring-black active:ring-opacity-50">
-            <i class="fas fa-plus mr-2"></i>Tambah Parfum
+<div class="container mx-auto py-8">
+
+    {{-- Flash Message --}}
+    @if(session('success'))
+        <div class="bg-green-200 text-green-800 p-4 rounded mb-4">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    <div class="flex justify-between items-center mb-4">
+        <h1 class="text-2xl font-bold">Data Parfum</h1>
+        <a href="{{ route('admin.parfum.create') }}" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition">
+            Tambah Parfum
         </a>
     </div>
-</div>
 
 <!-- Search & Filter Section -->
 <div class="bg-white rounded-xl shadow-lg p-6 mb-6 border border-gray-200">
@@ -174,31 +172,22 @@
                     @if($parfum->deskripsi)
                         <p class="text-sm text-gray-600 mb-4 line-clamp-2">{{ $parfum->deskripsi }}</p>
                     @endif
-
-                    <div class="flex space-x-2">
-                        <a href="{{ route('parfum.edit', $parfum->nama) }}" class="flex-1 bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-center text-sm transition active:scale-95">
-                            <i class="fas fa-edit mr-1"></i>Edit
-                        </a>
-                        <form action="{{ route('parfum.destroy', $parfum->nama) }}" method="POST" class="flex-1" onsubmit="return confirm('Yakin ingin menghapus parfum ini?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm transition active:scale-95">
-                                <i class="fas fa-trash mr-1"></i>Hapus
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        @endforeach
-    </div>
-@else
-    <div class="bg-white rounded-xl shadow-lg p-12 text-center border border-gray-200">
-        <i class="fas fa-search text-gray-300 text-6xl mb-4"></i>
-        <h3 class="text-xl font-semibold text-gray-600 mb-2">Tidak Ada Parfum Ditemukan</h3>
-        <p class="text-gray-500 mb-6">Coba ubah filter pencarian Anda</p>
-        <a href="{{ route('parfum.index') }}" class="inline-block bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-3 rounded-lg transition active:scale-95">
-            <i class="fas fa-redo mr-2"></i>Reset Filter
-        </a>
-    </div>
-@endif
+                </td>
+                <td class="py-2 px-4 border space-x-2">
+                    <a href="{{ route('admin.parfum.edit', $parfum->id) }}" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Edit</a>
+                    <form action="{{ route('admin.parfum.destroy', $parfum->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin menghapus?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Hapus</button>
+                    </form>
+                </td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="9" class="py-4 text-center text-gray-500">Data parfum tidak tersedia.</td>
+            </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
 @endsection

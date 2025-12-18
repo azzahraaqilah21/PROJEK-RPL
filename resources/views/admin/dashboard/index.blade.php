@@ -1,17 +1,17 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Dashboard')
 
 @section('content')
-<div class="pt-24 px-5 md:px-10 max-w-7xl mx-auto">
+    <div class="px-5 md:px-10 max-w-7xl mx-auto">
 
     <!-- HEADER -->
-    <div class="mb-10">
+    <div class="mb-8">
         <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">
             <i class="fas fa-chart-line mr-2 text-gray-800"></i>
             Dashboard Statistik Penjualan
         </h1>
-        <p class="text-gray-600 mt-2 text-sm md:text-base">
+        <p class="text-gray-600 mt-2 text-sm font-['poppins'] md:text-base">
             Ringkasan data dan statistik toko parfum
         </p>
     </div>
@@ -171,6 +171,6 @@
             </table>
         </div>
     </div>
-
 </div>
 @endsection
+
